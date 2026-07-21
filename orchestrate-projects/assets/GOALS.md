@@ -6,6 +6,10 @@ Last updated: {{UPDATED_AT}}
 
 {{PROJECT_OUTCOME}}
 
+## Project completion evidence
+
+- {{PROJECT_COMPLETION_EVIDENCE}}
+
 ## Operating constraints
 
 - {{CONSTRAINT}}
@@ -13,13 +17,29 @@ Last updated: {{UPDATED_AT}}
 ## Current state
 
 - Overall status: {{OVERALL_STATUS}}
-- Active milestone: {{ACTIVE_MILESTONE}}
-- Active Goal objective: {{ACTIVE_GOAL_OBJECTIVE}}
+- Current milestone: {{CURRENT_MILESTONE}}
+- Goal-mode status: {{GOAL_MODE_STATUS}}
+- Goal objective: {{GOAL_OBJECTIVE}}
+- Working revision and environment: {{WORKING_REVISION}}
 - Coordinator: {{COORDINATOR}}
+
+Use `Active`, `Proposed`, `Complete`, `Blocked`, or `Unavailable` for Goal-mode status.
+Use `Queued`, `Active`, `Verification`, `Complete`, or `Blocked` for milestone status. While work remains, keep exactly one current milestone in `Active`, `Verification`, or `Blocked`.
+
+## Workstreams
+
+| Owner | Mode | Scope | Status | Thread or reference | Evidence or next action |
+| --- | --- | --- | --- | --- | --- |
+| {{WORKSTREAM_1_OWNER}} | {{WORKSTREAM_1_MODE}} | {{WORKSTREAM_1_SCOPE}} | {{WORKSTREAM_1_STATUS}} | {{WORKSTREAM_1_REFERENCE}} | {{WORKSTREAM_1_EVIDENCE}} |
+| {{WORKSTREAM_2_OWNER}} | {{WORKSTREAM_2_MODE}} | {{WORKSTREAM_2_SCOPE}} | {{WORKSTREAM_2_STATUS}} | {{WORKSTREAM_2_REFERENCE}} | {{WORKSTREAM_2_EVIDENCE}} |
+
+Use `Subagent`, `Visible thread`, or `Local thread` for mode. Remove unused rows.
 
 ## Milestone M1: {{MILESTONE_1_NAME}}
 
-Status: Active
+- Status: {{MILESTONE_1_STATUS}}
+- Owner: {{MILESTONE_1_OWNER}}
+- Dependencies: {{MILESTONE_1_DEPENDENCIES}}
 
 ### Intended outcome
 
@@ -39,7 +59,7 @@ Status: Active
 
 ### Known blockers
 
-- None
+- {{MILESTONE_1_BLOCKER}}
 
 ### Evidence required
 
@@ -47,7 +67,17 @@ Status: Active
 
 ### Evidence collected
 
-- Pending
+| Result | Source | Revision and environment | Collected at |
+| --- | --- | --- | --- |
+| {{MILESTONE_1_EVIDENCE_RESULT}} | {{MILESTONE_1_EVIDENCE_SOURCE}} | {{MILESTONE_1_EVIDENCE_REVISION}} | {{MILESTONE_1_EVIDENCE_TIME}} |
+
+### Closure checkpoints
+
+| Checkpoint | Status | Thread or reference | Findings and evidence |
+| --- | --- | --- | --- |
+| Roadmap audit | {{MILESTONE_1_AUDIT_STATUS}} | {{MILESTONE_1_AUDIT_REFERENCE}} | {{MILESTONE_1_AUDIT_FINDINGS}} |
+| `/review` or artifact review | {{MILESTONE_1_REVIEW_STATUS}} | {{MILESTONE_1_REVIEW_REFERENCE}} | {{MILESTONE_1_REVIEW_FINDINGS}} |
+| Findings resolved and affected checks rerun | {{MILESTONE_1_RESOLUTION_STATUS}} | {{MILESTONE_1_RESOLUTION_REFERENCE}} | {{MILESTONE_1_RESOLUTION_EVIDENCE}} |
 
 ### Next actions
 
@@ -55,7 +85,9 @@ Status: Active
 
 ## Milestone M2: {{MILESTONE_2_NAME}}
 
-Status: Queued
+- Status: {{MILESTONE_2_STATUS}}
+- Owner: {{MILESTONE_2_OWNER}}
+- Dependencies: {{MILESTONE_2_DEPENDENCIES}}
 
 ### Intended outcome
 
@@ -71,11 +103,11 @@ Status: Queued
 
 ### Decisions and assumptions
 
-- Pending discovery
+- {{MILESTONE_2_DECISION}}
 
 ### Known blockers
 
-- None
+- {{MILESTONE_2_BLOCKER}}
 
 ### Evidence required
 
@@ -83,11 +115,21 @@ Status: Queued
 
 ### Evidence collected
 
-- Pending
+| Result | Source | Revision and environment | Collected at |
+| --- | --- | --- | --- |
+| {{MILESTONE_2_EVIDENCE_RESULT}} | {{MILESTONE_2_EVIDENCE_SOURCE}} | {{MILESTONE_2_EVIDENCE_REVISION}} | {{MILESTONE_2_EVIDENCE_TIME}} |
+
+### Closure checkpoints
+
+| Checkpoint | Status | Thread or reference | Findings and evidence |
+| --- | --- | --- | --- |
+| Roadmap audit | {{MILESTONE_2_AUDIT_STATUS}} | {{MILESTONE_2_AUDIT_REFERENCE}} | {{MILESTONE_2_AUDIT_FINDINGS}} |
+| `/review` or artifact review | {{MILESTONE_2_REVIEW_STATUS}} | {{MILESTONE_2_REVIEW_REFERENCE}} | {{MILESTONE_2_REVIEW_FINDINGS}} |
+| Findings resolved and affected checks rerun | {{MILESTONE_2_RESOLUTION_STATUS}} | {{MILESTONE_2_RESOLUTION_REFERENCE}} | {{MILESTONE_2_RESOLUTION_EVIDENCE}} |
 
 ### Next actions
 
-- [ ] Activate after M1 closes
+- [ ] {{MILESTONE_2_NEXT_ACTION}}
 
 ## Decision log
 
