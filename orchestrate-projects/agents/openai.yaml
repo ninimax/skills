@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orchestrate Projects"
+  short_description: "Coordinate long-running milestone projects"
+  default_prompt: "Use $orchestrate-projects to coordinate this as a long-running project, interview me, maintain a milestone roadmap, and keep one Goal-mode objective active at a time."
