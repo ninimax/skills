@@ -61,6 +61,7 @@ Use the main thread only for objective management, constraints, decisions, proje
 - Prefer isolated worktree threads for concurrent implementation. Do not assume a worktree contains the coordinator's branch or uncommitted changes.
 - Confirm the exact branch, commit, patch, or working tree visible to each worker before accepting its evidence.
 - Treat visible-thread dispatch as asynchronous. Record the thread reference, follow its progress, and do not treat creation as completion.
+- Give every visible task a concise sidebar title at creation, or rename it immediately if the creation tool assigns a generic title. Use `<project-tag> M<n> <purpose>: <short scope>`, keep the full title at 40 characters or fewer, and put the project, milestone, and purpose before optional scope. Use purpose labels such as `Build`, `Research`, `Closeout`, or `Local Test`; omit branch names, commit hashes, and filler such as `Task for`.
 - Avoid concurrent edits to the same files. Give each worker a clear ownership boundary.
 
 Keep `GOALS.md` and `progress-dashboard.html` under coordinator ownership. Workers return a concise result packet, never a full transcript:
@@ -78,7 +79,7 @@ Move the current milestone to `Verification` after implementation and its first-
 
 ### Audit the roadmap
 
-When visible threads are authorized, automatically create a fresh, separate visible milestone-closeout task in the same repository. Do not ask the user to create or initialize it. Give the task the exact branch, base and head revisions or patch, working-tree state, milestone outcome, evidence gate, `GOALS.md` path, and collected verification evidence. Confirm that it can see the tested revision before accepting its conclusions. A subagent may prepare evidence but does not satisfy this visible checkpoint.
+When visible threads are authorized, automatically create a fresh, separate visible milestone-closeout task in the same repository. Do not ask the user to create or initialize it. Title it `<project-tag> M<n> Closeout: <scope>`, shortening the scope to keep the title at 40 characters or fewer. Give the task the exact branch, base and head revisions or patch, working-tree state, milestone outcome, evidence gate, `GOALS.md` path, and collected verification evidence. Confirm that it can see the tested revision before accepting its conclusions. Record its title and reference in `GOALS.md`. A subagent may prepare evidence but does not satisfy this visible checkpoint.
 
 Ask the milestone-closeout task to audit the roadmap first:
 

@@ -33,7 +33,7 @@ Use `Queued`, `Active`, `Verification`, `Complete`, or `Blocked` for milestone s
 | {{WORKSTREAM_1_OWNER}} | {{WORKSTREAM_1_MODE}} | {{WORKSTREAM_1_SCOPE}} | {{WORKSTREAM_1_STATUS}} | {{WORKSTREAM_1_REFERENCE}} | {{WORKSTREAM_1_EVIDENCE}} |
 | {{WORKSTREAM_2_OWNER}} | {{WORKSTREAM_2_MODE}} | {{WORKSTREAM_2_SCOPE}} | {{WORKSTREAM_2_STATUS}} | {{WORKSTREAM_2_REFERENCE}} | {{WORKSTREAM_2_EVIDENCE}} |
 
-Use `Subagent`, `Visible thread`, or `Local thread` for mode. Remove unused rows.
+Use `Subagent`, `Visible thread`, or `Local thread` for mode. Record each visible task as its concise title plus reference. Remove unused rows.
 
 ## Milestone M1: {{MILESTONE_1_NAME}}
 
