@@ -1,6 +1,6 @@
 ---
 name: orchestrate-projects
-description: Coordinate long-running, multi-milestone projects across multiple turns, from conversational discovery through evidence-based completion. Use for project orchestration that requires interviewing the user, creating or maintaining GOALS.md, aligning one Goal-mode objective to the active milestone, delegating implementation to subagents or visible threads, closing milestones through independent audit and review, coordinating machine-dependent testing, or maintaining an evidence-based progress dashboard.
+description: Coordinate long-running, multi-milestone projects across multiple turns, from conversational discovery through evidence-based completion. Use for project orchestration that requires interviewing the user, creating or maintaining GOALS.md, aligning one Goal-mode objective to the active milestone, delegating implementation to subagents or visible threads, automatically closing milestones through a fresh visible audit and review task, coordinating machine-dependent testing, or maintaining an evidence-based progress dashboard.
 ---
 
 # Orchestrate Projects
@@ -78,9 +78,9 @@ Move the current milestone to `Verification` after implementation and its first-
 
 ### Audit the roadmap
 
-When visible threads are authorized, use a separate visible milestone-closeout thread to compare `GOALS.md` with the current project state. A subagent may prepare evidence but does not satisfy this visible checkpoint.
+When visible threads are authorized, automatically create a fresh, separate visible milestone-closeout task in the same repository. Do not ask the user to create or initialize it. Give the task the exact branch, base and head revisions or patch, working-tree state, milestone outcome, evidence gate, `GOALS.md` path, and collected verification evidence. Confirm that it can see the tested revision before accepting its conclusions. A subagent may prepare evidence but does not satisfy this visible checkpoint.
 
-Ask:
+Ask the milestone-closeout task to audit the roadmap first:
 
 - Is the milestone actually complete?
 - Is the next goal still correct?
@@ -88,13 +88,22 @@ Ask:
 - Has new evidence changed the order of work?
 - Does the definition of done still hold?
 
-Update the roadmap from supported findings before reviewing the implementation or activating the next objective. If thread creation is unavailable or unauthorized, prepare a self-contained handoff and keep the milestone in `Verification` until the checkpoint is completed or the user changes the agreed gate.
+Update the roadmap from supported findings before reviewing the implementation or activating the next objective. If visible task creation is unavailable or unauthorized, prepare a self-contained handoff and keep the milestone in `Verification` until the checkpoint is completed or the user changes the agreed gate.
 
 ### Review the implementation
 
-Run `/review` on implementation-bearing milestones in the milestone-closeout thread when the command is genuinely callable there. Sending `/review` as an ordinary background prompt is not evidence that the command ran. If user invocation is required, ask the user to run it in that thread and return the findings.
+After the roadmap audit, instruct the same milestone-closeout task to independently review every implementation-bearing milestone. The task must be review-only and must not be an implementation worker for that milestone. Give it this review contract:
 
-For a milestone without implementation, require an independent artifact and evidence review and record why `/review` is not applicable. Keep roadmap auditing and implementation review as distinct checkpoints even when the same visible thread performs both.
+- compare the exact base and tested head revisions
+- check the milestone outcome, scope, constraints, and required evidence in `GOALS.md`
+- inspect the diff and relevant surrounding code for correctness, regressions, security, maintainability, and missing tests
+- run relevant verification commands when the environment permits
+- return actionable findings first, with severity, file and line references, evidence, and a recommended fix
+- state explicitly when there are no findings and list the review and verification performed
+
+Use the specialized `/review` workflow when it is genuinely callable without user intervention, or when the user explicitly chooses it as an additional gate. Otherwise, a direct independent review assignment in the visible task satisfies this checkpoint. Do not require the user to invoke a slash command or block ordinary milestone completion solely because manual invocation would be required.
+
+For a milestone without implementation, require an independent artifact and evidence review. Keep roadmap auditing and implementation review as distinct checkpoints even when the same visible task performs both.
 
 Do not mark the milestone complete or activate the next objective until both checkpoints finish. Resolve actionable findings, repeat affected verification, and re-run review when the changes are material.
 

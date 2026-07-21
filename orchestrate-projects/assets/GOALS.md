@@ -76,7 +76,7 @@ Use `Subagent`, `Visible thread`, or `Local thread` for mode. Remove unused rows
 | Checkpoint | Status | Thread or reference | Findings and evidence |
 | --- | --- | --- | --- |
 | Roadmap audit | {{MILESTONE_1_AUDIT_STATUS}} | {{MILESTONE_1_AUDIT_REFERENCE}} | {{MILESTONE_1_AUDIT_FINDINGS}} |
-| `/review` or artifact review | {{MILESTONE_1_REVIEW_STATUS}} | {{MILESTONE_1_REVIEW_REFERENCE}} | {{MILESTONE_1_REVIEW_FINDINGS}} |
+| Independent implementation or artifact review | {{MILESTONE_1_REVIEW_STATUS}} | {{MILESTONE_1_REVIEW_REFERENCE}} | {{MILESTONE_1_REVIEW_FINDINGS}} |
 | Findings resolved and affected checks rerun | {{MILESTONE_1_RESOLUTION_STATUS}} | {{MILESTONE_1_RESOLUTION_REFERENCE}} | {{MILESTONE_1_RESOLUTION_EVIDENCE}} |
 
 ### Next actions
@@ -124,7 +124,7 @@ Use `Subagent`, `Visible thread`, or `Local thread` for mode. Remove unused rows
 | Checkpoint | Status | Thread or reference | Findings and evidence |
 | --- | --- | --- | --- |
 | Roadmap audit | {{MILESTONE_2_AUDIT_STATUS}} | {{MILESTONE_2_AUDIT_REFERENCE}} | {{MILESTONE_2_AUDIT_FINDINGS}} |
-| `/review` or artifact review | {{MILESTONE_2_REVIEW_STATUS}} | {{MILESTONE_2_REVIEW_REFERENCE}} | {{MILESTONE_2_REVIEW_FINDINGS}} |
+| Independent implementation or artifact review | {{MILESTONE_2_REVIEW_STATUS}} | {{MILESTONE_2_REVIEW_REFERENCE}} | {{MILESTONE_2_REVIEW_FINDINGS}} |
 | Findings resolved and affected checks rerun | {{MILESTONE_2_RESOLUTION_STATUS}} | {{MILESTONE_2_RESOLUTION_REFERENCE}} | {{MILESTONE_2_RESOLUTION_EVIDENCE}} |
 
 ### Next actions

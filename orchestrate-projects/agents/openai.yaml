@@ -1,4 +1,4 @@
 interface:
   display_name: "Orchestrate Projects"
   short_description: "Coordinate long-running milestone projects"
-  default_prompt: "Use $orchestrate-projects to coordinate this as a long-running project: interview me, create and maintain GOALS.md, keep one Goal-mode objective aligned to the active milestone, delegate implementation, and create separate Codex threads for inspectable work and milestone audit/review."
+  default_prompt: "Use $orchestrate-projects to coordinate this as a long-running project: interview me, maintain GOALS.md and one Goal-mode objective aligned to the active milestone, delegate implementation, and automatically create visible Codex tasks for inspectable work and milestone audit and review."
