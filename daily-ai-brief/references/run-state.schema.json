@@ -1,0 +1,1178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:daily-ai-brief:run-state:v1",
+  "title": "Daily AI Brief run state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "graph_version",
+    "revision",
+    "run_id",
+    "date",
+    "timezone",
+    "started_at",
+    "finished_at",
+    "status",
+    "current_node",
+    "budgets",
+    "history",
+    "candidates",
+    "selection",
+    "artifact",
+    "publication",
+    "persistence",
+    "node_status",
+    "trace",
+    "errors"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "daily-ai-brief.run/v1"
+    },
+    "graph_version": {
+      "const": "daily-ai-brief.graph/v1"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "date-time"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "running",
+        "blocked",
+        "publish_failed",
+        "failed",
+        "succeeded"
+      ]
+    },
+    "current_node": {
+      "type": "string",
+      "minLength": 1
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "research_seconds",
+        "discovery_passes",
+        "targeted_rounds",
+        "targeted_searches",
+        "artifact_repairs",
+        "publish_retries",
+        "live_checks"
+      ],
+      "properties": {
+        "research_seconds": {
+          "$ref": "#/$defs/budget"
+        },
+        "discovery_passes": {
+          "$ref": "#/$defs/budget"
+        },
+        "targeted_rounds": {
+          "$ref": "#/$defs/budget"
+        },
+        "targeted_searches": {
+          "$ref": "#/$defs/budget"
+        },
+        "artifact_repairs": {
+          "$ref": "#/$defs/budget"
+        },
+        "publish_retries": {
+          "$ref": "#/$defs/budget"
+        },
+        "live_checks": {
+          "$ref": "#/$defs/budget"
+        }
+      }
+    },
+    "history": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runs_read",
+        "people",
+        "themes",
+        "urls"
+      ],
+      "properties": {
+        "runs_read": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "people": {
+          "$ref": "#/$defs/unique_strings"
+        },
+        "themes": {
+          "$ref": "#/$defs/unique_strings"
+        },
+        "urls": {
+          "$ref": "#/$defs/unique_strings"
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/candidate"
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_ids",
+        "item_count",
+        "shortfall_reason"
+      ],
+      "properties": {
+        "candidate_ids": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "item_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "shortfall_reason": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "item_count": {
+                "minimum": 1,
+                "maximum": 9
+              }
+            },
+            "required": [
+              "item_count"
+            ]
+          },
+          "then": {
+            "properties": {
+              "shortfall_reason": {
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "item_count": {
+                "const": 10
+              }
+            },
+            "required": [
+              "item_count"
+            ]
+          },
+          "then": {
+            "properties": {
+              "shortfall_reason": {
+                "maxLength": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/artifact"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "publication": {
+      "$ref": "#/$defs/publication"
+    },
+    "persistence": {
+      "$ref": "#/$defs/persistence"
+    },
+    "node_status": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/node_status"
+      }
+    },
+    "trace": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/trace_event"
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/error"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "running"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "finished_at": {
+            "type": "null"
+          },
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "not_written"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "current_node": {
+            "const": "done"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "selection": {
+            "properties": {
+              "item_count": {
+                "minimum": 1
+              }
+            }
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          },
+          "publication": {
+            "properties": {
+              "target_verified": {
+                "const": true
+              },
+              "delivery_status": {
+                "enum": [
+                  "updated",
+                  "unchanged"
+                ]
+              },
+              "live_status": {
+                "const": "verified"
+              }
+            }
+          },
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "written"
+              },
+              "run_log_entry_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          },
+          "errors": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "blocked"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "current_node": {
+            "const": "blocked"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "selection": {
+            "properties": {
+              "item_count": {
+                "minimum": 1
+              }
+            }
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          },
+          "publication": {
+            "properties": {
+              "target_verified": {
+                "const": false
+              },
+              "delivery_status": {
+                "const": "not_attempted"
+              },
+              "live_status": {
+                "const": "not_checked"
+              },
+              "attempts": {
+                "const": 0
+              },
+              "live_checks": {
+                "const": 0
+              }
+            }
+          },
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "not_written"
+              },
+              "run_log_entry_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "errors": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "publish_failed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "current_node": {
+            "const": "publish_failed"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "selection": {
+            "properties": {
+              "item_count": {
+                "minimum": 1
+              }
+            }
+          },
+          "artifact": {
+            "$ref": "#/$defs/artifact"
+          },
+          "publication": {
+            "properties": {
+              "target_verified": {
+                "const": true
+              }
+            },
+            "anyOf": [
+              {
+                "properties": {
+                  "delivery_status": {
+                    "enum": [
+                      "failed",
+                      "conflict"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "live_status": {
+                    "enum": [
+                      "failed",
+                      "mismatch"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "not_written"
+              },
+              "run_log_entry_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "errors": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "current_node": {
+            "const": "failed"
+          },
+          "finished_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "not_written"
+              },
+              "run_log_entry_sha256": {
+                "type": "null"
+              }
+            }
+          },
+          "errors": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "used",
+        "max"
+      ],
+      "properties": {
+        "used": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "unique_strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "original_url",
+        "canonical_url",
+        "tier",
+        "kind",
+        "published_date",
+        "checked_at",
+        "verified"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "original_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "canonical_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tier": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "kind": {
+          "enum": [
+            "primary",
+            "independent",
+            "specialist",
+            "fallback"
+          ]
+        },
+        "published_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "impact",
+        "source_quality",
+        "freshness",
+        "influence",
+        "novelty",
+        "total"
+      ],
+      "properties": {
+        "impact": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "source_quality": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "freshness": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "influence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "novelty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "person",
+        "role_org",
+        "why_it_matters",
+        "summary",
+        "theme",
+        "story_fingerprint",
+        "selected_source_url",
+        "sources",
+        "scores",
+        "confirmation_attempts",
+        "status",
+        "rejection_reason"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "person": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role_org": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "theme": {
+          "type": "string",
+          "minLength": 1
+        },
+        "story_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected_source_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "scores": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/scores"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confirmation_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "enum": [
+            "discovered",
+            "verified",
+            "selected",
+            "rejected"
+          ]
+        },
+        "rejection_reason": {
+          "type": "string"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "selected"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "story_fingerprint": {
+                "type": "string",
+                "minLength": 1
+              },
+              "selected_source_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "scores": {
+                "$ref": "#/$defs/scores"
+              },
+              "rejection_reason": {
+                "maxLength": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "rejected"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "rejection_reason": {
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "content_fingerprint",
+        "item_count",
+        "validated",
+        "validated_at"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "content_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "item_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "validated": {
+          "type": "boolean"
+        },
+        "validated_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "mode",
+        "target_verified",
+        "target_id",
+        "target_url",
+        "idempotency_key",
+        "delivery_status",
+        "live_status",
+        "attempts",
+        "live_checks",
+        "receipt_fingerprint",
+        "live_fingerprint",
+        "live_date",
+        "live_item_count",
+        "failure_reason"
+      ],
+      "properties": {
+        "required": {
+          "const": true
+        },
+        "mode": {
+          "enum": [
+            "content_refresh",
+            "full_deployment"
+          ]
+        },
+        "target_verified": {
+          "type": "boolean"
+        },
+        "target_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "target_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery_status": {
+          "enum": [
+            "not_attempted",
+            "updated",
+            "unchanged",
+            "failed",
+            "conflict"
+          ]
+        },
+        "live_status": {
+          "enum": [
+            "not_checked",
+            "verified",
+            "mismatch",
+            "failed"
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "live_checks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "receipt_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "live_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "live_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "live_item_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure_reason": {
+          "type": "string"
+        }
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attempt_state_path",
+        "run_log_path",
+        "run_log_status",
+        "run_log_entry_sha256"
+      ],
+      "properties": {
+        "attempt_state_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_log_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_log_status": {
+          "enum": [
+            "not_written",
+            "written"
+          ]
+        },
+        "run_log_entry_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "node_status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "attempts",
+        "last_error"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "failed",
+            "blocked",
+            "skipped"
+          ]
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_error": {
+          "type": "string"
+        }
+      }
+    },
+    "trace_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence",
+        "at",
+        "node",
+        "attempt",
+        "outcome",
+        "route",
+        "input_revision",
+        "output_revision",
+        "duration_ms",
+        "counts",
+        "reason_code"
+      ],
+      "properties": {
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "outcome": {
+          "enum": [
+            "completed",
+            "failed",
+            "blocked",
+            "retrying"
+          ]
+        },
+        "route": {
+          "type": "string"
+        },
+        "input_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "candidates": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "qualified": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "selected": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sources": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "articles": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "live_items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "node",
+        "reason_code",
+        "message",
+        "retryable",
+        "at"
+      ],
+      "properties": {
+        "node": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

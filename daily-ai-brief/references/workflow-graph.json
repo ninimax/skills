@@ -1,0 +1,380 @@
+{
+  "graph_version": "daily-ai-brief.graph/v1",
+  "state_schema_version": "daily-ai-brief.run/v1",
+  "start_node": "load_state",
+  "terminal_nodes": [
+    "done",
+    "blocked",
+    "publish_failed",
+    "failed"
+  ],
+  "global_failure_target": "failed",
+  "handoff_contract": {
+    "media_type": "application/json",
+    "schema": "run-state.schema.json",
+    "revision_rule": "Increment the state revision exactly once for every trace event."
+  },
+  "budgets": {
+    "research_seconds": 600,
+    "discovery_passes": 1,
+    "targeted_rounds": 2,
+    "targeted_searches": 8,
+    "artifact_repairs": 1,
+    "publish_retries": 2,
+    "live_checks": 3
+  },
+  "nodes": {
+    "load_state": {
+      "reads": [
+        "/date",
+        "/timezone",
+        "/persistence/run_log_path"
+      ],
+      "writes": [
+        "/history",
+        "/publication/target_verified"
+      ]
+    },
+    "parallel_discovery": {
+      "parallel_branches": [
+        "primary_sources",
+        "independent_reporting",
+        "specialist_discovery"
+      ],
+      "reads": [
+        "/history",
+        "/budgets/discovery_passes"
+      ],
+      "writes": [
+        "/candidates",
+        "/budgets/discovery_passes/used"
+      ]
+    },
+    "normalize": {
+      "reads": [
+        "/candidates"
+      ],
+      "writes": [
+        "/candidates/*/sources/*/canonical_url",
+        "/candidates/*/story_fingerprint"
+      ]
+    },
+    "verify_sources": {
+      "reads": [
+        "/candidates/*/sources"
+      ],
+      "writes": [
+        "/candidates/*/sources/*/verified",
+        "/candidates/*/confirmation_attempts"
+      ]
+    },
+    "score_dedupe": {
+      "reads": [
+        "/history",
+        "/candidates"
+      ],
+      "writes": [
+        "/candidates/*/scores",
+        "/candidates/*/status",
+        "/candidates/*/rejection_reason"
+      ]
+    },
+    "quality_gate": {
+      "reads": [
+        "/candidates",
+        "/budgets/targeted_rounds",
+        "/budgets/targeted_searches"
+      ],
+      "writes": [
+        "/selection"
+      ]
+    },
+    "targeted_research": {
+      "reads": [
+        "/candidates",
+        "/budgets/targeted_rounds",
+        "/budgets/targeted_searches"
+      ],
+      "writes": [
+        "/candidates",
+        "/budgets/targeted_rounds/used",
+        "/budgets/targeted_searches/used"
+      ]
+    },
+    "render": {
+      "reads": [
+        "/selection",
+        "/candidates"
+      ],
+      "writes": [
+        "/artifact/path",
+        "/artifact/sha256",
+        "/artifact/content_fingerprint",
+        "/artifact/item_count",
+        "/artifact/validated",
+        "/artifact/validated_at"
+      ]
+    },
+    "validate": {
+      "reads": [
+        "/artifact",
+        "/selection",
+        "/publication/required",
+        "/trace"
+      ],
+      "writes": [
+        "/artifact/validated",
+        "/artifact/validated_at",
+        "/budgets/artifact_repairs/used"
+      ]
+    },
+    "publish_update": {
+      "reads": [
+        "/artifact/content_fingerprint",
+        "/publication/mode",
+        "/publication/idempotency_key"
+      ],
+      "writes": [
+        "/publication/delivery_status",
+        "/publication/receipt_fingerprint",
+        "/publication/attempts",
+        "/budgets/publish_retries/used"
+      ]
+    },
+    "live_verify": {
+      "reads": [
+        "/publication/target_url",
+        "/artifact/content_fingerprint"
+      ],
+      "writes": [
+        "/publication/live_status",
+        "/publication/live_fingerprint",
+        "/publication/live_date",
+        "/publication/live_item_count",
+        "/publication/live_checks",
+        "/budgets/live_checks/used"
+      ]
+    },
+    "persist_success": {
+      "reads": [
+        "/artifact/validated",
+        "/publication/live_status",
+        "/persistence/run_log_path"
+      ],
+      "writes": [
+        "/persistence/run_log_status",
+        "/persistence/run_log_entry_sha256"
+      ]
+    },
+    "done": {
+      "reads": [
+        "/persistence/run_log_status"
+      ],
+      "writes": [
+        "/status",
+        "/finished_at"
+      ]
+    },
+    "blocked": {
+      "reads": [
+        "/artifact/validated",
+        "/publication/target_verified"
+      ],
+      "writes": [
+        "/status",
+        "/finished_at"
+      ]
+    },
+    "publish_failed": {
+      "reads": [
+        "/artifact/validated",
+        "/publication"
+      ],
+      "writes": [
+        "/status",
+        "/finished_at",
+        "/errors"
+      ]
+    },
+    "failed": {
+      "reads": [
+        "/errors"
+      ],
+      "writes": [
+        "/status",
+        "/finished_at"
+      ]
+    }
+  },
+  "edges": [
+    {
+      "from": "load_state",
+      "to": "parallel_discovery",
+      "condition": "state_loaded"
+    },
+    {
+      "from": "parallel_discovery",
+      "to": "normalize",
+      "condition": "discovery_joined"
+    },
+    {
+      "from": "normalize",
+      "to": "verify_sources",
+      "condition": "candidates_normalized"
+    },
+    {
+      "from": "verify_sources",
+      "to": "score_dedupe",
+      "condition": "verification_complete"
+    },
+    {
+      "from": "score_dedupe",
+      "to": "quality_gate",
+      "condition": "scores_and_clusters_ready"
+    },
+    {
+      "from": "quality_gate",
+      "to": "targeted_research",
+      "condition": "item_target_not_met_and_budget_remains"
+    },
+    {
+      "from": "targeted_research",
+      "to": "normalize",
+      "condition": "targeted_round_complete"
+    },
+    {
+      "from": "quality_gate",
+      "to": "render",
+      "condition": "ten_items_ready"
+    },
+    {
+      "from": "quality_gate",
+      "to": "render",
+      "condition": "declared_shortfall_and_budget_exhausted"
+    },
+    {
+      "from": "render",
+      "to": "validate",
+      "condition": "artifact_written"
+    },
+    {
+      "from": "validate",
+      "to": "render",
+      "condition": "repairable_failure_and_budget_remains"
+    },
+    {
+      "from": "validate",
+      "to": "publish_update",
+      "condition": "artifact_valid_and_target_verified"
+    },
+    {
+      "from": "validate",
+      "to": "blocked",
+      "condition": "artifact_valid_and_target_unverified"
+    },
+    {
+      "from": "publish_update",
+      "to": "publish_update",
+      "condition": "retryable_delivery_failure_and_budget_remains"
+    },
+    {
+      "from": "publish_update",
+      "to": "live_verify",
+      "condition": "delivery_updated_or_unchanged"
+    },
+    {
+      "from": "publish_update",
+      "to": "publish_failed",
+      "condition": "delivery_conflict_permanent_failure_or_budget_exhausted"
+    },
+    {
+      "from": "live_verify",
+      "to": "live_verify",
+      "condition": "transient_read_failure_and_budget_remains"
+    },
+    {
+      "from": "live_verify",
+      "to": "persist_success",
+      "condition": "live_content_matches"
+    },
+    {
+      "from": "live_verify",
+      "to": "publish_failed",
+      "condition": "live_mismatch_permanent_failure_or_budget_exhausted"
+    },
+    {
+      "from": "persist_success",
+      "to": "done",
+      "condition": "success_history_written_idempotently"
+    }
+  ],
+  "loops": [
+    {
+      "name": "targeted_fill",
+      "backedge_from": "targeted_research",
+      "backedge_to": "normalize",
+      "budget": "targeted_rounds",
+      "maximum": 2
+    },
+    {
+      "name": "artifact_repair",
+      "backedge_from": "validate",
+      "backedge_to": "render",
+      "budget": "artifact_repairs",
+      "maximum": 1
+    },
+    {
+      "name": "publication_retry",
+      "backedge_from": "publish_update",
+      "backedge_to": "publish_update",
+      "budget": "publish_retries",
+      "maximum": 2
+    },
+    {
+      "name": "live_verification_retry",
+      "backedge_from": "live_verify",
+      "backedge_to": "live_verify",
+      "budget": "live_checks",
+      "maximum_backedges": 2,
+      "maximum_total_checks": 3
+    }
+  ],
+  "terminal_contracts": {
+    "done": {
+      "status": "succeeded",
+      "requires": [
+        "artifact_validated",
+        "delivery_updated_or_unchanged",
+        "live_content_matches",
+        "success_history_written"
+      ]
+    },
+    "blocked": {
+      "status": "blocked",
+      "requires": [
+        "artifact_validated",
+        "publication_target_unverified",
+        "success_history_not_written"
+      ]
+    },
+    "publish_failed": {
+      "status": "publish_failed",
+      "requires": [
+        "artifact_retained",
+        "publication_failure_recorded",
+        "success_history_not_written"
+      ]
+    },
+    "failed": {
+      "status": "failed",
+      "requires": [
+        "operational_failure_recorded",
+        "success_history_not_written"
+      ]
+    }
+  },
+  "publication_modes": {
+    "content_refresh": "Update edition content through a verified preconfigured adapter without saving or deploying site code.",
+    "full_deployment": "Save and deploy a new version of a verified existing Sites project for authorized code or asset changes only."
+  }
+}
