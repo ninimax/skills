@@ -9,6 +9,10 @@
     "failed"
   ],
   "global_failure_target": "failed",
+  "global_failure_exclusions": [
+    "publish_update",
+    "live_verify"
+  ],
   "handoff_contract": {
     "media_type": "application/json",
     "schema": "run-state.schema.json",
@@ -23,6 +27,12 @@
     "publish_retries": 2,
     "live_checks": 3
   },
+  "budget_accounting": {
+    "research_seconds": "Sum duration_ms across parallel_discovery, normalize, verify_sources, score_dedupe, quality_gate, and targeted_research, divided by 1000.",
+    "targeted_searches": "Sum trace counts.searches across targeted_research events.",
+    "confirmation_searches": "Sum trace counts.searches across verify_sources events and require agreement with candidate confirmation_attempts.",
+    "retries": "Derive backedge usage from repeated node attempts; never accept self-reported retry totals."
+  },
   "nodes": {
     "load_state": {
       "reads": [
@@ -32,7 +42,8 @@
       ],
       "writes": [
         "/history",
-        "/publication/target_verified"
+        "/publication/target_verified",
+        "/publication/authorization_status"
       ]
     },
     "parallel_discovery": {
@@ -76,7 +87,8 @@
       "writes": [
         "/candidates/*/scores",
         "/candidates/*/status",
-        "/candidates/*/rejection_reason"
+        "/candidates/*/rejection_reason",
+        "/candidates/*/history_overlap_reason"
       ]
     },
     "quality_gate": {
@@ -112,7 +124,8 @@
         "/artifact/content_fingerprint",
         "/artifact/item_count",
         "/artifact/validated",
-        "/artifact/validated_at"
+        "/artifact/validated_at",
+        "/publication/idempotency_key"
       ]
     },
     "validate": {
@@ -151,6 +164,11 @@
         "/publication/live_fingerprint",
         "/publication/live_date",
         "/publication/live_item_count",
+        "/publication/archive_url",
+        "/publication/archive_status",
+        "/publication/archive_fingerprint",
+        "/publication/archive_date",
+        "/publication/archive_item_count",
         "/publication/live_checks",
         "/budgets/live_checks/used"
       ]
@@ -159,6 +177,7 @@
       "reads": [
         "/artifact/validated",
         "/publication/live_status",
+        "/publication/archive_status",
         "/persistence/run_log_path"
       ],
       "writes": [
@@ -172,7 +191,9 @@
       ],
       "writes": [
         "/status",
-        "/finished_at"
+        "/finished_at",
+        "/publication/failure_reason",
+        "/errors"
       ]
     },
     "blocked": {
@@ -193,6 +214,7 @@
       "writes": [
         "/status",
         "/finished_at",
+        "/publication/failure_reason",
         "/errors"
       ]
     },
@@ -265,12 +287,12 @@
     {
       "from": "validate",
       "to": "publish_update",
-      "condition": "artifact_valid_and_target_verified"
+      "condition": "artifact_valid_target_verified_content_refresh_authorization_not_required"
     },
     {
       "from": "validate",
       "to": "blocked",
-      "condition": "artifact_valid_and_target_unverified"
+      "condition": "artifact_valid_and_target_or_adapter_unverified_or_full_deployment_authorization_required"
     },
     {
       "from": "publish_update",
@@ -295,12 +317,12 @@
     {
       "from": "live_verify",
       "to": "persist_success",
-      "condition": "live_content_matches"
+      "condition": "live_and_archive_match"
     },
     {
       "from": "live_verify",
       "to": "publish_failed",
-      "condition": "live_mismatch_permanent_failure_or_budget_exhausted"
+      "condition": "live_or_archive_mismatch_permanent_failure_or_budget_exhausted"
     },
     {
       "from": "persist_success",
@@ -328,7 +350,11 @@
       "backedge_from": "publish_update",
       "backedge_to": "publish_update",
       "budget": "publish_retries",
-      "maximum": 2
+      "maximum": 2,
+      "invariants": [
+        "/artifact/content_fingerprint",
+        "/publication/idempotency_key"
+      ]
     },
     {
       "name": "live_verification_retry",
@@ -346,6 +372,7 @@
         "artifact_validated",
         "delivery_updated_or_unchanged",
         "live_content_matches",
+        "archive_entry_matches",
         "success_history_written"
       ]
     },
@@ -353,7 +380,8 @@
       "status": "blocked",
       "requires": [
         "artifact_validated",
-        "publication_target_unverified",
+        "publication_not_executed",
+        "blocker_recorded",
         "success_history_not_written"
       ]
     },
@@ -375,6 +403,6 @@
   },
   "publication_modes": {
     "content_refresh": "Update edition content through a verified preconfigured adapter without saving or deploying site code.",
-    "full_deployment": "Save and deploy a new version of a verified existing Sites project for authorized code or asset changes only."
+    "full_deployment": "Classify a requested code or asset deployment and stop blocked; execution requires a separately authorized workflow with deployment-bundle proof."
   }
 }

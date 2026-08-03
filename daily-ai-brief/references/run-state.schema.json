@@ -254,6 +254,72 @@
     {
       "if": {
         "properties": {
+          "publication": {
+            "properties": {
+              "mode": {
+                "const": "full_deployment"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "publication"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "blocked"
+          },
+          "current_node": {
+            "const": "blocked"
+          },
+          "publication": {
+            "properties": {
+              "authorization_status": {
+                "const": "required"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "publication": {
+            "properties": {
+              "mode": {
+                "const": "content_refresh"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "publication"
+        ]
+      },
+      "then": {
+        "properties": {
+          "publication": {
+            "properties": {
+              "authorization_status": {
+                "const": "not_required"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "status": {
             "const": "running"
           }
@@ -270,7 +336,47 @@
           "persistence": {
             "properties": {
               "run_log_status": {
-                "const": "not_written"
+                "enum": [
+                  "not_written",
+                  "pending_append"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "persistence": {
+            "properties": {
+              "run_log_status": {
+                "const": "pending_append"
+              }
+            },
+            "required": [
+              "run_log_status"
+            ]
+          }
+        },
+        "required": [
+          "persistence"
+        ]
+      },
+      "then": {
+        "properties": {
+          "status": {
+            "const": "running"
+          },
+          "current_node": {
+            "const": "persist_success"
+          },
+          "persistence": {
+            "properties": {
+              "run_log_entry_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
               }
             }
           }
@@ -305,12 +411,45 @@
             }
           },
           "artifact": {
-            "$ref": "#/$defs/artifact"
+            "allOf": [
+              {
+                "$ref": "#/$defs/artifact"
+              },
+              {
+                "properties": {
+                  "validated": {
+                    "const": true
+                  },
+                  "validated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            ]
           },
           "publication": {
             "properties": {
+              "mode": {
+                "const": "content_refresh"
+              },
+              "authorization_status": {
+                "const": "not_required"
+              },
               "target_verified": {
                 "const": true
+              },
+              "target_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "target_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "idempotency_key": {
+                "type": "string",
+                "minLength": 1
               },
               "delivery_status": {
                 "enum": [
@@ -320,6 +459,54 @@
               },
               "live_status": {
                 "const": "verified"
+              },
+              "attempts": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "live_checks": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "receipt_fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "live_fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "live_date": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "live_item_count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "archive_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "archive_status": {
+                "const": "verified"
+              },
+              "archive_fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "archive_date": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+              },
+              "archive_item_count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "failure_reason": {
+                "maxLength": 0
               }
             }
           },
@@ -368,13 +555,25 @@
             }
           },
           "artifact": {
-            "$ref": "#/$defs/artifact"
+            "allOf": [
+              {
+                "$ref": "#/$defs/artifact"
+              },
+              {
+                "properties": {
+                  "validated": {
+                    "const": true
+                  },
+                  "validated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            ]
           },
           "publication": {
             "properties": {
-              "target_verified": {
-                "const": false
-              },
               "delivery_status": {
                 "const": "not_attempted"
               },
@@ -387,7 +586,23 @@
               "live_checks": {
                 "const": 0
               }
-            }
+            },
+            "anyOf": [
+              {
+                "properties": {
+                  "mode": {
+                    "const": "full_deployment"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "target_verified": {
+                    "const": false
+                  }
+                }
+              }
+            ]
           },
           "persistence": {
             "properties": {
@@ -433,7 +648,22 @@
             }
           },
           "artifact": {
-            "$ref": "#/$defs/artifact"
+            "allOf": [
+              {
+                "$ref": "#/$defs/artifact"
+              },
+              {
+                "properties": {
+                  "validated": {
+                    "const": true
+                  },
+                  "validated_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            ]
           },
           "publication": {
             "properties": {
@@ -455,6 +685,16 @@
               {
                 "properties": {
                   "live_status": {
+                    "enum": [
+                      "failed",
+                      "mismatch"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "archive_status": {
                     "enum": [
                       "failed",
                       "mismatch"
@@ -499,6 +739,31 @@
           "finished_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "artifact": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/artifact"
+                  },
+                  {
+                    "properties": {
+                      "validated": {
+                        "const": true
+                      },
+                      "validated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
           },
           "persistence": {
             "properties": {
@@ -658,6 +923,7 @@
         "summary",
         "theme",
         "story_fingerprint",
+        "history_overlap_reason",
         "selected_source_url",
         "sources",
         "scores",
@@ -702,6 +968,12 @@
             }
           ]
         },
+        "history_overlap_reason": {
+          "enum": [
+            "",
+            "MATERIAL_NEW_DEVELOPMENT"
+          ]
+        },
         "selected_source_url": {
           "anyOf": [
             {
@@ -744,7 +1016,8 @@
           ]
         },
         "rejection_reason": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?:|[A-Z][A-Z0-9_]{1,63})$"
         }
       },
       "allOf": [
@@ -821,7 +1094,8 @@
         },
         "content_fingerprint": {
           "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 over the ordered public fields person, role_org, why_it_matters, summary, selected source label, and canonical source URL."
         },
         "item_count": {
           "type": "integer",
@@ -850,6 +1124,7 @@
       "required": [
         "required",
         "mode",
+        "authorization_status",
         "target_verified",
         "target_id",
         "target_url",
@@ -862,6 +1137,11 @@
         "live_fingerprint",
         "live_date",
         "live_item_count",
+        "archive_url",
+        "archive_status",
+        "archive_fingerprint",
+        "archive_date",
+        "archive_item_count",
         "failure_reason"
       ],
       "properties": {
@@ -872,6 +1152,12 @@
           "enum": [
             "content_refresh",
             "full_deployment"
+          ]
+        },
+        "authorization_status": {
+          "enum": [
+            "not_required",
+            "required"
           ]
         },
         "target_verified": {
@@ -980,8 +1266,62 @@
             }
           ]
         },
+        "archive_url": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "archive_status": {
+          "enum": [
+            "not_checked",
+            "verified",
+            "mismatch",
+            "failed"
+          ]
+        },
+        "archive_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "archive_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "archive_item_count": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "failure_reason": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?:|[A-Z][A-Z0-9_]{1,63})$"
         }
       }
     },
@@ -1006,6 +1346,7 @@
         "run_log_status": {
           "enum": [
             "not_written",
+            "pending_append",
             "written"
           ]
         },
@@ -1046,7 +1387,8 @@
           "minimum": 0
         },
         "last_error": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?:|[A-Z][A-Z0-9_]{1,63})$"
         }
       }
     },
@@ -1064,7 +1406,9 @@
         "output_revision",
         "duration_ms",
         "counts",
-        "reason_code"
+        "reason_code",
+        "payload_fingerprint",
+        "idempotency_key"
       ],
       "properties": {
         "sequence": {
@@ -1133,12 +1477,38 @@
             "live_items": {
               "type": "integer",
               "minimum": 0
+            },
+            "searches": {
+              "type": "integer",
+              "minimum": 0
             }
           }
         },
         "reason_code": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "payload_fingerprint": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "idempotency_key": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
@@ -1159,11 +1529,12 @@
         },
         "reason_code": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
         },
         "message": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "maxLength": 500
         },
         "retryable": {
           "type": "boolean"
