@@ -1,88 +1,96 @@
 ---
 name: daily-ai-brief
-description: Produce or maintain a Daily AI and Agentic Engineering brief on a scheduled run. Ranks 10 AI people by current newsworthiness using live web research, dedupes against recent runs, writes a standalone HTML brief, and appends a run-log entry.
+description: Produce or maintain a scheduled Daily AI and Agentic Engineering brief as a versioned, stateful workflow graph. Use for live research, ranked standalone HTML editions, recent-run dedupe, bounded recovery loops, verified publication updates, safe execution traces, and fail-closed success history.
 ---
 
 # Daily AI and Agentic Engineering Brief
 
-## Workflow
+## Contracts
 
-1. Use `./.daily-ai-brief/run-log.md` as the default durable state file unless the user provides another path. Create it if missing.
-2. Read `references/source-strategy.md` before web research.
-3. Resolve the run date and timezone from the automation/runtime environment. If the scheduler passes an explicit date or timezone, use it; otherwise use the runtime clock's date and UTC. Record the resolved date and timezone in the run-log entry.
-4. Extract the last two runs from the run log: selected people, URLs, and story themes. If the log is new or has fewer than two runs, proceed with whatever history exists (including none) and skip novelty-dedupe against missing runs.
-5. Run one broad discovery pass over the trusted source tiers.
-6. Build at least 14 candidate people or story-person pairs.
-7. Run targeted searches only for missing primary confirmation, weak citations, or important people with unclear freshness. Cap this at about 8 targeted searches; if a candidate still lacks a credible current source after one confirmation attempt, drop it rather than searching further.
-8. Stop broad searching once there are 10 distinct high-signal stories with credible current sources.
-9. Draft 10 ranked items as a standalone HTML brief using the output contract below unless the shortfall fallback applies.
-10. Write the HTML brief to `./daily-ai-brief-YYYY-MM-DD.html` unless the user or scheduler provides another output path. Return the HTML file path in the final response; do not require the user to open the Markdown run log to read the brief.
-11. If fewer than 10 items clear the source-quality bar, still output the strongest set you have, mark the shortfall at the top of the HTML brief (for example, `8/10 - 2 dropped for weak sourcing`), and record why in the run log. Never pad to 10 with weak or fabricated sources.
-12. Append a concise run-log entry with the selected people, major themes, source-quality decisions, resolved date and timezone, output file path, any shortfall reason, and workflow notes.
-13. Run the verification checks below before finalizing.
+Before each run:
 
-Target an 8-10 minute research budget.
+1. Read `references/workflow-graph.json` as the authoritative nodes, edges, budgets, and terminal-state contract.
+2. Read `references/run-state.schema.json` when creating or resuming structured run state.
+3. Read `references/source-strategy.md` before web research.
 
-## Selection Rules
+Do not add an orchestration framework. Execute the graph with the available tools and use the bundled validator for deterministic gates.
 
-Score candidates by:
+## Runtime State
 
-1. Impact on AI agents, agentic engineering, coding agents, model releases, AI safety/governance, infrastructure, open source AI, or major AI business/product moves.
-2. Credibility and specificity of the source.
-3. Current newsworthiness relative to the resolved run date.
-4. Influence of the named person.
-5. Novelty compared with the last two runs.
+Use these workspace-relative defaults unless the scheduler provides alternatives:
 
-Prefer a stronger source over a hotter but weakly sourced claim. If a person has no genuinely important current news, replace them.
+- HTML artifact: `./daily-ai-brief-YYYY-MM-DD.html`
+- Attempt state: `./.daily-ai-brief/runs/<run-id>.json`
+- Successful history: `./.daily-ai-brief/run-log.md`
 
-Treat these as duplicate stories unless there is a clearly different angle:
+Resolve the run date and timezone from explicit scheduler values, then the runtime environment, then UTC. Use one stable run ID for retries and recovery.
 
-1. The same model launch covered through multiple executives.
-2. The same policy dispute attributed to both a company and regulator.
-3. The same funding, chip, data-center, or partnership news attached to several people.
-4. Follow-up commentary that adds no new fact or decision.
+Write attempt state atomically with a same-directory temporary file and replacement. Persist operational states such as `blocked`, `publish_failed`, and `failed`, but never treat them as successful history. Keep each trace event to the allowlisted schema fields. Record counts, routes, durations, attempts, reason codes, and errors only. Never store prompts, raw responses, source bodies, credentials, headers, secrets, private reasoning, or chain-of-thought.
 
-Keep the person most directly responsible or most newsworthy for the story, then replace the others.
+## Execute Graph v1
 
-## Output Contract
+Follow only edges declared in `references/workflow-graph.json`:
 
-Create a standalone HTML document as the primary user-facing artifact. Include 10 items unless the shortfall fallback applies.
+1. `load_state`: Read up to two recent successful run-log entries. Extract people, themes, and source URLs. Accept legacy entries without v1 fields, but require URLs in every new v1 success entry. Verify any preconfigured publication adapter read-only.
+2. `parallel_discovery`: Run the primary, independent-reporting, and specialist branches concurrently when tools allow. Join their results into at least 14 candidate person-story pairs.
+3. `normalize`: Canonicalize URLs, normalize themes, and assign stable story fingerprints.
+4. `verify_sources`: Confirm dates, source tiers, HTTPS URLs, and consequential claims. Allow at most one confirmation search per candidate.
+5. `score_dedupe`: Apply the deterministic score in the source strategy. Reject duplicate people, normalized themes, story fingerprints, and canonical URLs.
+6. `quality_gate`: Select up to 10 qualified candidates. Route through `targeted_research` only while both targeted budgets remain. If fewer than 10 survive after budget exhaustion, declare the shortfall and continue without padding.
+7. `render`: Write the standalone HTML artifact and compute its SHA-256 plus the ordered-content fingerprint defined by the validator.
+8. `validate`: Set the current node to `validate` with `artifact.validated` false, then run the bundled validator. On success, set it true with the validation timestamp. Use the single repair backedge only for a repairable artifact failure.
+9. `publish_update`: Use only a verified, preconfigured adapter that publishes the exact validated edition and returns the same content fingerprint. Keep the payload fingerprint and idempotency key unchanged across retries.
+10. `live_verify`: Independently read both the live edition and its immutable archive entry. Compare their date, ordered people, canonical URLs, item count, and content fingerprint with the local state.
+11. `persist_success`: Before writing history, run the validator with current node `persist_success` to recheck artifact, live, and archive proof. Use the pending-append recovery protocol below, then mark the state `succeeded` at `done` and run the validator again.
 
-The HTML must:
+Update `revision`, `node_status`, budgets, trace, and errors after every node handoff.
 
-1. Open directly in a browser with no external CSS, JavaScript, fonts, or assets.
-2. Use semantic structure: `<title>`, `<h1>`, optional shortfall banner, `<ol>`, one `<article>` per item, and a footer with the generated timestamp/timezone.
-3. Include the exact resolved date in the title and main heading.
-4. Use readable responsive CSS embedded in the document.
-5. Escape text content and use real source URLs in anchor tags.
+## Publication Boundary
 
-For each item, include:
+Distinguish the two publication modes:
 
-1. Person
-2. Role/org
-3. Why it matters
-4. Source link
-5. Concise summary
+- `content_refresh`: Update edition content through an existing adapter without saving or deploying site code. Use this for normal daily editions.
+- `full_deployment`: Record whether the existing target was verified, set authorization to required, then stop at `blocked`. This daily graph does not execute deployments because it has no deployment-bundle authorization or proof contract. A separately approved workflow must perform and verify that mutation.
 
-Each summary must be 500 characters or less. Keep the brief concrete and avoid speculative language unless the source itself reports uncertainty.
+Never create a site, replace a project ID, change access, alter design, modify automation, change hosting configuration, or execute `full_deployment` during a daily run. A refresh endpoint that independently researches or regenerates content is not a compatible adapter because it cannot prove local artifact and live-edition agreement. Route to `blocked` before mutation when the target or adapter cannot be verified.
 
-The final response should be brief and include the generated HTML file path. Do not produce a separate Markdown brief unless the user explicitly requests it.
+Use `daily-ai-brief/<date>/<content-fingerprint>` as the idempotency key. Retry only transient network failures or HTTP 408, 425, 429, and 5xx responses. Allow an initial attempt plus two retries. Never use a force-regeneration option as an automatic retry. Treat same-date same-fingerprint content as `unchanged`; treat same-date different-fingerprint content as `conflict`.
 
-## Verification
+Terminal meanings:
 
-Before finalizing, confirm:
+- `done`: Local artifact, delivery receipt, live edition, immutable archive entry, and Markdown success history all agree.
+- `blocked`: Local artifact is valid, but the target, compatible adapter, or required mutation approval is unavailable. Do not publish or append success history.
+- `publish_failed`: A verified adapter was attempted but delivery, live verification, or archive verification failed. Retain the HTML, record the failure, and do not append success history.
+- `failed`: Local research, rendering, validation, or persistence failed irrecoverably.
 
-- Item count is 10, or the shortfall is stated at the top of the brief.
-- The standalone HTML file exists at the expected output path.
-- The final response includes the generated HTML file path.
-- Every item has a resolvable current-source link (no placeholders, no invented URLs).
-- Every summary is 500 characters or less.
-- No two items share a story theme.
-- A run-log entry was appended with the resolved date, timezone, output file path, and any shortfall reason.
+## HTML Contract
 
-## Run Log Entry
+Create one standalone UTF-8 HTML document with no scripts or external CSS, fonts, images, or assets. Include:
 
-Use this structure:
+- One dated `<title>`, `<h1>`, `<ol>`, and footer
+- One `<article>` per selected item
+- A visible exact shortfall reason when fewer than 10 items qualify
+- Person, role/org, why it matters, one real HTTPS source link, and a summary of at most 500 characters per item
+- Article text that exactly matches those structured fields, the `Why it matters:` label, and the selected source record label
+- The resolved date and generated timestamp/timezone
+
+Preserve existing visual design when updating an established publication target. Daily runs may change edition content, archive metadata, and operational state only.
+
+## Deterministic Validation
+
+Run from the brief workspace, resolving `<skill-directory>` to this skill's installed or repository path:
+
+```bash
+python3 <skill-directory>/scripts/validate_run.py \
+  --workspace . \
+  --state ./.daily-ai-brief/runs/<run-id>.json
+```
+
+The validator checks graph transitions, retry bounds, trace safety, source and story uniqueness, score arithmetic, dates, item count or shortfall, summary length, HTML/state agreement, artifact digests, publication proof, live proof, and run-log idempotency.
+
+## Successful Run-Log Entry
+
+Keep legacy labels and add v1 fields:
 
 ```text
 ## YYYY-MM-DD HH:MM TZ
@@ -90,9 +98,24 @@ Use this structure:
 - Produced/updated:
 - Selected people:
 - Main themes:
+- Source URLs: ["https://example.com/source"]
 - Source-quality notes:
 - Resolved date/timezone:
 - Output file:
 - Shortfall reason:
+- Graph version:
+- Run state:
+- Publication:
+- Live edition:
+- Archive edition:
+- Run ID:
 - Runtime/workflow notes:
 ```
+
+For v1 entries, write selected people and themes as exact comma-and-space joined ordered lists. Write `Resolved date/timezone` as `YYYY-MM-DD, IANA timezone, HH:MM TZ` from the run start. These values, source URLs, and the entry digest must exactly match run state.
+
+Append this entry only after independent live and archive verification. Before the atomic append, store its intended digest with `run_log_status: pending_append`. On recovery, accept either no matching block or one exact matching block, then finish the same run ID without duplication. Only `done` changes the status to `written`.
+
+## Final Response
+
+Return the local HTML path, terminal status, and live edition URL when verified. For `blocked`, `publish_failed`, or `failed`, state the exact blocker or failure and the safe next action. Never claim end-to-end success before `done` passes validation.
