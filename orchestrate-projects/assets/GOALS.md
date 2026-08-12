@@ -76,8 +76,27 @@ Use `Subagent`, `Visible thread`, or `Local thread` for mode. Record each visibl
 | Checkpoint | Status | Thread or reference | Findings and evidence |
 | --- | --- | --- | --- |
 | Roadmap audit | {{MILESTONE_1_AUDIT_STATUS}} | {{MILESTONE_1_AUDIT_REFERENCE}} | {{MILESTONE_1_AUDIT_FINDINGS}} |
-| Independent implementation or artifact review | {{MILESTONE_1_REVIEW_STATUS}} | {{MILESTONE_1_REVIEW_REFERENCE}} | {{MILESTONE_1_REVIEW_FINDINGS}} |
+| Final {{MILESTONE_1_REVIEW_TYPE}} review | {{MILESTONE_1_REVIEW_STATUS}} | {{MILESTONE_1_REVIEW_REFERENCE}} | {{MILESTONE_1_REVIEW_FINDINGS}} |
 | Findings resolved and affected checks rerun | {{MILESTONE_1_RESOLUTION_STATUS}} | {{MILESTONE_1_RESOLUTION_REFERENCE}} | {{MILESTONE_1_RESOLUTION_EVIDENCE}} |
+| Closeout metadata | {{MILESTONE_1_CLOSEOUT_STATUS}} | {{MILESTONE_1_CLOSEOUT_REFERENCE}} | Reviewed candidate {{MILESTONE_1_REVIEWED_CANDIDATE}}; metadata revision: the commit containing this closeout row; {{MILESTONE_1_CLOSEOUT_DELTA}} |
+
+Use `specialized implementation` or `independent artifact and evidence` for review type.
+
+### Roadmap audit rounds
+
+| Round | Candidate revision | Status | Task reference | Findings and disposition |
+| --- | --- | --- | --- | --- |
+| A1 | {{MILESTONE_1_AUDIT_1_REVISION}} | {{MILESTONE_1_AUDIT_1_STATUS}} | {{MILESTONE_1_AUDIT_1_REFERENCE}} | {{MILESTONE_1_AUDIT_1_FINDINGS}} |
+
+Add one immutable row for every audit round. Keep each task visible and never replace an earlier round.
+
+### Review rounds
+
+| Round | Type | Candidate revision | Status | Task reference | Findings and disposition |
+| --- | --- | --- | --- | --- | --- |
+| R1 | {{MILESTONE_1_REVIEW_1_TYPE}} | {{MILESTONE_1_REVIEW_1_REVISION}} | {{MILESTONE_1_REVIEW_1_STATUS}} | {{MILESTONE_1_REVIEW_1_REFERENCE}} | {{MILESTONE_1_REVIEW_1_FINDINGS}} |
+
+Add one immutable row for every review round. Keep each task visible and never replace an earlier round.
 
 ### Next actions
 
@@ -124,8 +143,27 @@ Use `Subagent`, `Visible thread`, or `Local thread` for mode. Record each visibl
 | Checkpoint | Status | Thread or reference | Findings and evidence |
 | --- | --- | --- | --- |
 | Roadmap audit | {{MILESTONE_2_AUDIT_STATUS}} | {{MILESTONE_2_AUDIT_REFERENCE}} | {{MILESTONE_2_AUDIT_FINDINGS}} |
-| Independent implementation or artifact review | {{MILESTONE_2_REVIEW_STATUS}} | {{MILESTONE_2_REVIEW_REFERENCE}} | {{MILESTONE_2_REVIEW_FINDINGS}} |
+| Final {{MILESTONE_2_REVIEW_TYPE}} review | {{MILESTONE_2_REVIEW_STATUS}} | {{MILESTONE_2_REVIEW_REFERENCE}} | {{MILESTONE_2_REVIEW_FINDINGS}} |
 | Findings resolved and affected checks rerun | {{MILESTONE_2_RESOLUTION_STATUS}} | {{MILESTONE_2_RESOLUTION_REFERENCE}} | {{MILESTONE_2_RESOLUTION_EVIDENCE}} |
+| Closeout metadata | {{MILESTONE_2_CLOSEOUT_STATUS}} | {{MILESTONE_2_CLOSEOUT_REFERENCE}} | Reviewed candidate {{MILESTONE_2_REVIEWED_CANDIDATE}}; metadata revision: the commit containing this closeout row; {{MILESTONE_2_CLOSEOUT_DELTA}} |
+
+Use `specialized implementation` or `independent artifact and evidence` for review type.
+
+### Roadmap audit rounds
+
+| Round | Candidate revision | Status | Task reference | Findings and disposition |
+| --- | --- | --- | --- | --- |
+| A1 | {{MILESTONE_2_AUDIT_1_REVISION}} | {{MILESTONE_2_AUDIT_1_STATUS}} | {{MILESTONE_2_AUDIT_1_REFERENCE}} | {{MILESTONE_2_AUDIT_1_FINDINGS}} |
+
+Add one immutable row for every audit round. Keep each task visible and never replace an earlier round.
+
+### Review rounds
+
+| Round | Type | Candidate revision | Status | Task reference | Findings and disposition |
+| --- | --- | --- | --- | --- | --- |
+| R1 | {{MILESTONE_2_REVIEW_1_TYPE}} | {{MILESTONE_2_REVIEW_1_REVISION}} | {{MILESTONE_2_REVIEW_1_STATUS}} | {{MILESTONE_2_REVIEW_1_REFERENCE}} | {{MILESTONE_2_REVIEW_1_FINDINGS}} |
+
+Add one immutable row for every review round. Keep each task visible and never replace an earlier round.
 
 ### Next actions
 

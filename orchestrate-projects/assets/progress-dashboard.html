@@ -602,15 +602,43 @@
           <ul class="evidence-list">
             <li>
               <strong>Roadmap audit · {{ROADMAP_AUDIT_STATUS}}</strong>
-              <span>{{ROADMAP_AUDIT_DETAIL}}</span>
+              <span>{{ROADMAP_AUDIT_DETAIL}} · {{ROADMAP_AUDIT_TASK_REFERENCE}}</span>
             </li>
             <li>
-              <strong>Implementation or artifact review · {{REVIEW_STATUS}}</strong>
-              <span>{{REVIEW_DETAIL}}</span>
+              <strong>{{REVIEW_TYPE}} review R{{REVIEW_ROUND}} · {{REVIEW_STATUS}}</strong>
+              <span>{{REVIEW_DETAIL}} · {{REVIEW_CANDIDATE_REVISION}} · {{REVIEW_TASK_REFERENCE}}</span>
             </li>
             <li>
               <strong>Resolution and reverification · {{REVERIFICATION_STATUS}}</strong>
-              <span>{{REVERIFICATION_DETAIL}}</span>
+              <span>{{REVERIFICATION_DETAIL}} · {{REVERIFICATION_REVISION}}</span>
+            </li>
+            <li>
+              <strong>Closeout metadata · {{CLOSEOUT_METADATA_STATUS}}</strong>
+              <span>Reviewed {{CLOSEOUT_REVIEWED_CANDIDATE}} · recorded by the commit containing this closeout row · {{CLOSEOUT_METADATA_DETAIL}}</span>
+            </li>
+          </ul>
+
+          <h3 class="section-label">Roadmap audit history</h3>
+          <ul class="activity-list">
+            <li>
+              <strong>A{{AUDIT_1_ROUND}} · {{AUDIT_1_STATUS}}</strong>
+              <span>{{AUDIT_1_REVISION}} · {{AUDIT_1_TASK_REFERENCE}} · {{AUDIT_1_DETAIL}}</span>
+            </li>
+            <li>
+              <strong>A{{AUDIT_2_ROUND}} · {{AUDIT_2_STATUS}}</strong>
+              <span>{{AUDIT_2_REVISION}} · {{AUDIT_2_TASK_REFERENCE}} · {{AUDIT_2_DETAIL}}</span>
+            </li>
+          </ul>
+
+          <h3 class="section-label">Review history</h3>
+          <ul class="activity-list">
+            <li>
+              <strong>R{{REVIEW_1_ROUND}} · {{REVIEW_1_TYPE}} · {{REVIEW_1_STATUS}}</strong>
+              <span>{{REVIEW_1_REVISION}} · {{REVIEW_1_TASK_REFERENCE}} · {{REVIEW_1_DETAIL}}</span>
+            </li>
+            <li>
+              <strong>R{{REVIEW_2_ROUND}} · {{REVIEW_2_TYPE}} · {{REVIEW_2_STATUS}}</strong>
+              <span>{{REVIEW_2_REVISION}} · {{REVIEW_2_TASK_REFERENCE}} · {{REVIEW_2_DETAIL}}</span>
             </li>
           </ul>
         </article>
