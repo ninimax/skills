@@ -1,6 +1,6 @@
 ---
 name: luma-event-interest-to-use-case-mapping
-description: Analyze live Luma event registration interests, rank participant themes, and map them to verified official ChatGPT use cases. Use when event-planning insights should come directly from Luma instead of a CSV export.
+description: Analyze live Luma event registration interests, rank participant themes, map them to verified official ChatGPT use cases, and create audience-ready showcase tasks when explicitly requested. Use when event-planning insights should come directly from Luma instead of a CSV export.
 ---
 
 # Luma Event Interest to Use Case Mapping
@@ -55,6 +55,20 @@ For every ranked theme:
 
 Never invent a use-case title or link. The Luma connector supplies registration data; the official catalog supplies the use-case matches.
 
+## Create the showcase tasks
+
+Create showcase tasks only when the user explicitly requests them or explicitly invokes the full showcase workflow. If this skill was selected implicitly for an analysis-only request, stop after the mapping report and offer to create the tasks.
+
+1. Create one visible Codex task for each ranked official use case, up to the requested number of themes. If fewer substantive themes exist, create only the available tasks and report the difference.
+2. List the available Codex projects and select the current project. Ask the user to choose only when the current project cannot be identified unambiguously. For a Git project, use an isolated worktree for each task. Otherwise use the saved project directly.
+3. Give each task one non-overlapping folder under `showcases/`, named with its two-digit rank and a short use-case slug. Do not let showcase tasks edit shared files or another showcase folder.
+4. Include only the aggregated participant theme, response count, verified use-case title, URL, summary, and relevant event context in each task prompt. Never include participant names, contact information, raw answers, or guest records.
+5. Ask each task to build the smallest high-impact artifact that demonstrates the mapped use case to a live audience in three to five minutes. Match the artifact type to the use case instead of defaulting to an app.
+6. Prefer existing project capabilities, native formats, and already-installed dependencies. Search for a real external asset only when it materially improves the showcase, then verify its direct source and license before use. Prefer public-domain, CC0, or permissively licensed open data and media, and OSI-approved code. If provenance is unclear or sourcing adds little value, create clearly labeled synthetic data or mock files locally instead.
+7. Require each task to place a concise `SHOWCASE.md` beside the artifact with the audience hook, presentation flow, open or run steps, source and license details, verification performed, and a fallback if the live demo fails.
+8. Require proportionate verification before completion. Test browser experiences in a browser, render document or media artifacts, and run relevant checks for code. Keep the result self-contained and usable without private accounts or participant data.
+9. Task creation is asynchronous. Follow every created task to completion or a user-attention request. Wait in batches of up to eight tasks, read each final result, and do not treat task creation as successful delivery.
+
 ## Report
 
 Lead with the result and include:
@@ -63,6 +77,7 @@ Lead with the result and include:
 - Total retrieved registrations, substantive answers, and excluded unclear answers
 - A table with rank, participant theme, response count, linked official use case, and concise rationale
 - A short recommendation on which themes deserve the most workshop time
+- When showcase tasks were authorized, a table with each task title, reference, status, and showcase folder
 - Confirmation that no Luma records were changed
 
 Do not include a conversation transcript, raw guest export, or personal participant details.
