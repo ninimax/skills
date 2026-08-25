@@ -29,9 +29,13 @@ Do not approve, decline, invite, message, check in, or modify guests or the even
 
 ## Rank the themes
 
+- Before coding, define a mutually exclusive theme frame at one consistent level of abstraction.
+- Do not rank both a parent theme and one of its child themes unless their boundaries are explicit.
 - Assign each substantive response one primary theme to avoid double counting.
 - For a multi-topic response, use the participant's dominant requested outcome.
 - Keep vague answers such as no preference or generic exploration in an `Unclear` group and exclude them from the ranking.
+- Assign every retrieved record the first applicable disposition in this order: outside the requested status scope, invite-only without a submitted answer, blank, unclear, or one substantive theme. Verify that the disposition counts sum to the retrieved guest count.
+- When comparing snapshots, reuse the same theme frame for both. Otherwise state that their theme counts are not longitudinally comparable.
 - Rank the requested number of themes, defaulting to ten.
 - Report raw counts. State that the coding is directional when responses overlap.
 - Keep theme names concrete and faithful to the submitted intent.
@@ -39,6 +43,8 @@ Do not approve, decline, invite, message, check in, or modify guests or the even
 ## Match official use cases
 
 Search the official OpenAI documentation for `https://learn.chatgpt.com/use-cases`. Prefer the OpenAI documentation connector. If the catalog page is dynamic or cannot be fetched as Markdown, inspect the live page with the Browser skill in read-only mode.
+
+When several use cases fit, prefer the broadest direct catalog match to the dominant participant outcome. Use a narrower match only when the participant theme is equally narrow.
 
 For every ranked theme:
 
