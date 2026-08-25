@@ -1,0 +1,16 @@
+interface:
+  display_name: "Luma Event Interest to Use Case Mapping"
+  short_description: "Map live Luma interests to official use cases"
+  default_prompt: "Use $luma-event-interest-to-use-case-mapping to analyze a live Luma event registration question and map the top themes to official ChatGPT use cases."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "codex_apps"
+      description: "Connected Luma app for events and registration answers"
+    - type: "mcp"
+      value: "openaiDeveloperDocs"
+      description: "Official OpenAI documentation search and retrieval"
+      transport: "streamable_http"
+      url: "https://developers.openai.com/mcp"
+policy:
+  allow_implicit_invocation: true
