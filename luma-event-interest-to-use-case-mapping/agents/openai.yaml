@@ -1,7 +1,7 @@
 interface:
   display_name: "Luma Event Interest to Use Case Mapping"
-  short_description: "Map Luma interests and create showcase tasks"
-  default_prompt: "Use $luma-event-interest-to-use-case-mapping to analyze a live Luma event registration question, map the top themes to official ChatGPT use cases, and create one audience-ready showcase task per ranked use case in this project using openly licensed or synthetic assets."
+  short_description: "Map Luma interests to showcase workflows"
+  default_prompt: "Use $luma-event-interest-to-use-case-mapping to rank the top ten interests from a live Luma event, match them to official ChatGPT and Codex use cases, and design event-tailored showcase workflows."
 dependencies:
   tools:
     - type: "mcp"
