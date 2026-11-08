@@ -1,6 +1,6 @@
 # Diagnostic tools
 
-Run from the skill folder, or use absolute paths to its scripts. Python 3.9+ is required. JSON goes to standard output; save reports in the user's private task folder, not in the shareable skill. Paths and volume names can be personal information. These tools are read-only and never launch an application, install software, swap a volume or delete files.
+Run from the skill folder, or use absolute paths to its scripts. Python 3.9+ is required. JSON goes to standard output; save reports in the user's private task folder, not in the shareable skill. Paths and volume names can be personal information. These tools are read-only and never launch the inspected application or installer, install software, swap a volume or delete files. They do run the documented local inspection commands; `verify_copy.py` also starts its own Python worker, and `audit_bundle.py --macho` invokes `/usr/bin/otool`.
 
 ## Inspect a Mac
 
