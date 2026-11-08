@@ -95,9 +95,21 @@ Once acceptance passes, stop speculative tuning. For a later performance request
 
 ## Process cleanup and space recovery
 
+Cleanup is part of every test lifecycle, not only a final tidy-up. Prefer a unique task-owned temporary directory and register artifacts as they are created: extracted installers, cloned or copied environments, downloaded packages, mounted images, logs, screenshots, crash reports and redirected diagnostic output. Scripts should use temporary-directory context managers or explicit cleanup handlers where practical. Do not wait until the end to discover which directories a test created.
+
+After each rejected candidate, and after the accepted replacement passes final-location acceptance, classify the artifacts:
+
+- Keep the final deliverable, current documents/saves/settings, requested or evidential source copies, and the last working rollback until the replacement is accepted.
+- Keep a small, sanitized diagnostic record for unresolved problems. Remove bulky raw traces and screenshots once the needed facts are preserved, unless the user asked to retain them or they are still needed for diagnosis.
+- Remove obsolete test copies, extracted installers, superseded downloads, temporary virtual-disc images and generated reports that are no longer needed. Do not treat a file called `final`, `backup`, `test` or `work` as disposable from its name alone.
+
+Before removal, trace references from the final deliverable and other live environments. Delete only exact task-owned paths inside the intended workspace or temporary root, with no broad name-based globs. Prefer a recoverable, clearly named Trash location for user-visible artifacts. Permanent deletion is appropriate only for known task-owned temporary content within the authorized scope. Never empty the user's whole Trash as part of routine cleanup.
+
 Stop only this application's owned processes and environment. When using Wine, do not use global kills that can terminate unrelated applications. Supply the correct prefix and runtime environment for a targeted wineserver operation; verify termination, waiting for that prefix's server when needed, before moving or changing its state.
 
-Before cleanup, inventory final deliverables, active runtimes, user data, registered environments, source discs and rollback assets. Scan dependencies and check for running test instances. Remove only authorized obsolete artifacts. Prefer a clearly named recoverable Trash folder with an original-location manifest when practical. Do not delete every directory matching `test` without dependency inspection.
+Before cleanup, inventory final deliverables, active runtimes, user data, registered environments, source discs and rollback assets. Scan dependencies and check for running test instances. Detach only mounts owned by the finished test after confirming that no active consumer still needs them. Remove only authorized obsolete artifacts. Prefer a clearly named recoverable Trash folder with an original-location manifest when practical. Do not delete every directory matching `test` without dependency inspection.
+
+After cleanup, launch the final deliverable again and perform the smallest relevant interaction to expose a hidden dependency on deleted staging files. Record what was removed, what remains and why. List large retained artifacts with logical sizes. Where useful, compare `du` logical usage and `df` free space before and after; neither is a guaranteed measurement of recoverable physical space.
 
 Moving files to Trash does not immediately recover their storage. Emptying Trash is permanent and may include unrelated items, so inspect its contents before advising that it is safe. Report logical size separately from physical space reclaimed: APFS clones share blocks, and snapshots or other references may retain storage. Never claim the sum of duplicate app sizes is guaranteed recoverable space.
 

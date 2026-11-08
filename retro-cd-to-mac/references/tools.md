@@ -37,3 +37,5 @@ Reports `no_static_findings`, `review_findings`, or `incomplete`. Exit 0 means t
 The auditor reads bundle metadata only from a regular file inside the bundle, up to 4 MiB. Unreadable, malformed or skipped metadata makes the scan incomplete. Optional native library inspection uses the system tool at `/usr/bin/otool`.
 
 Run from a trusted, quiescent copy. These tools are not sandboxes for hostile files or forensic validators. Keep raw reports private. For public troubleshooting, share only the relevant status or a redacted finding; paths, filenames, symlink destinations and disk listings can identify your account and media.
+
+The included diagnostic scripts print to standard output and do not create report files themselves. Their tests use temporary directories with automatic cleanup. If the agent redirects output or collects logs, screenshots, extracted files or test environments, it must apply the [cleanup workflow](packaging-verification.md#process-cleanup-and-space-recovery) after preserving needed evidence.

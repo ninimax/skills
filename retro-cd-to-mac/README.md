@@ -21,6 +21,8 @@ The agent discovers your setup before choosing a runtime or workflow. Compatibil
 
 Run `python3 -m unittest discover -s tests -v` from this folder. Tests validate diagnostic behavior, not arbitrary application compatibility. No second-Mac verification is implied. The skill adapts testing to the software: document editing/export for productivity tools, meaningful calculation for utilities, or map interaction for games.
 
+The workflow includes cleanup of task-owned temporary tests and diagnostic artifacts after the needed evidence is captured. It preserves final deliverables, user data, required source copies, working rollback versions and evidence for unresolved issues; it does not automatically delete user files or empty Trash.
+
 Share a clean export of the tracked skill files, not a working directory, its Git history or an installed game. The diagnostic scripts do not upload anything, but their local reports can identify volumes, filenames, user directories and installed tools. Keep reports, disc images, installers, CD keys and registered environments out of public archives and issues. Runtime/engine downloads and redistribution notices must be handled independently.
 
 ## Contributing a reusable improvement
