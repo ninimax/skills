@@ -12,6 +12,8 @@ Example request:
 
 The agent discovers your setup before choosing a runtime or workflow. Compatibility differs by application, media condition, Mac architecture and macOS version. Some programs need a different environment. Disc-free operation and portability are separately tested properties.
 
+Disc-free means legitimate physical-media independence through full installation, official updates or supported local media mapping. The skill does not bypass CD keys, activation, license checks or disc protection. If a required key or authorization is unavailable, it recommends legitimate recovery or publisher-supported alternatives rather than skipping the check.
+
 ## Contents and testing
 
 - `SKILL.md`: the reusable workflow and reference routing.

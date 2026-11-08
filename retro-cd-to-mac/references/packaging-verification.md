@@ -9,7 +9,7 @@ These are separate properties:
 - **Installed:** the original installation and required registration steps completed.
 - **Launches:** the intended application reaches visible, responsive UI.
 - **Usable:** a representative document, task, mission or map works, including relevant controls.
-- **Physical-disc-free:** it works with the original CD/DVD removed. A bundled local image can still be required.
+- **Physical-disc-free:** it works with the original CD/DVD removed through legitimate installation, official updates or supported local media. A bundled local image can still be required. This is a deployment property, not removal or evasion of a key, activation, license or media check.
 - **Self-contained:** the application runtime and required initial assets are bundled, apart from documented system prerequisites. Required external runtime/assets mean it is not self-contained, even when those dependencies are documented.
 - **Relocatable:** moving the bundle does not break paths or silently lose existing state.
 - **Portable:** another compatible Mac can initialize and run it with all prerequisites documented. A clean-account test on the same Mac is useful intermediate evidence, not a substitute for a second-Mac test.

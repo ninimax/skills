@@ -25,7 +25,7 @@ Read only the references needed for the current stage:
 | --- | --- |
 | Unreadable media, multiple discs, installer errors, prerequisites, patches, video crashes | [Discs and installation](references/discs-installation.md) |
 | Small/cropped/stretching picture, Retina mismatch, stuck/double/offset pointer, fonts or stuttering | [Display, input and performance](references/display-input-performance.md) |
-| App bundling, external runtimes, moving apps, saves, no-disc verification, cleanup | [Packaging and verification](references/packaging-verification.md) |
+| App bundling, external runtimes, moving apps, saves, physical-disc-independent verification, cleanup | [Packaging and verification](references/packaging-verification.md) |
 
 Use symptom-based diagnosis for every application. Match the actual product, edition, architecture, patch, runtime and rendering path before selecting a remedy. Keep application-specific settings and results in private task notes, not in this generic skill. A successful workaround for one configuration is not a default for another.
 
@@ -47,7 +47,7 @@ For a Mac app bundle, use `scripts/audit_bundle.py APP` to flag external links, 
 
 Keep reproducible setup separate from mutable documents, saves and settings. Use a documented persistent state location appropriate to the chosen runtime or environment, not the build workspace. Never replace existing user state on every launch. For Wine, initializing or migrating a prefix must preserve its registration, settings and saves. Retain the last verified version until the replacement passes acceptance.
 
-For disc-free use, prefer documented full installation, official patches or supported local media mapping. Do not promise physical-disc independence when the original media check cannot work. Do not manufacture keys or distribute proprietary applications, private user data or protection-circumvention binaries as part of this skill. Explain unsupported hardware/driver/protection requirements and viable alternatives candidly.
+For disc-free use, prefer documented full installation, official updates or supported local media mapping that leaves normal license and media validation intact. Physical-disc independence means not inserting the original disc; it does not mean bypassing, disabling or evading a required CD-key, activation, license or media check. Do not manufacture keys, invent registration data, or use or distribute key generators, cracks, unauthorized modified executables or other protection-circumvention methods. If a required key or authorization is unavailable, do not proceed past that check; suggest locating the original key, publisher recovery or support, an official digital edition or another supported application. Do not promise physical-disc independence when the original media check cannot work. Explain unsupported hardware/driver/protection requirements and viable alternatives candidly.
 
 ## Completion evidence
 
