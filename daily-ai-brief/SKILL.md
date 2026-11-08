@@ -15,6 +15,20 @@ Before each run:
 
 Do not add an orchestration framework. Execute the graph with the available tools and use the bundled validator for deterministic gates.
 
+## People-first editorial guardrail
+
+Rank consequential people, not convenient papers. Require evidence that each person made, led, authored, maintained, or is directly accountable for the dated action. Do not automatically promote a paper's first author or attach a CEO to an unrelated company event.
+
+Before selecting, scan all four discovery channels: official company/product announcements; engineering blogs and major open-source maintainer releases; independent original reporting; and research/lab publications. Include at least 14 genuine person/story pairs and record which channels were checked. Exclude future-dated candidates rather than counting them toward a historical edition's slate.
+
+Apply influence and direct agency first, then AI-builder relevance, source specificity, freshness, and novelty. Preserve any required numeric score arithmetic, but do not let retrieval convenience determine the shortlist. A complete edition needs at least eight core builders, executives, researchers, product/engineering leaders, or major maintainers, with at most two independently consequential policy/legal/geopolitical entries.
+
+Do not infer ethnicity or nationality from names, set demographic quotas, or exclude people based on perceived identity. Correct narrow sourcing by broadening discovery and evaluating agency, not by demographic balancing.
+
+Do not default to an arXiv-only or research-only edition. If papers dominate, explicitly compare them against the strongest verified product, engineering, maintainer, and executive actions. Keep research when it genuinely wins on consequence and agency. Disclose a research-heavy edition and the sourcing reason; do not impose an arbitrary paper cap or pad with weak industry news.
+
+Use today/yesterday, then the edition's current week. Keep historical editions free of later findings by reading the original source or dated revision. Reject repeated events even when a new person or URL is attached. Publish an honest shortfall only after the broad channels and bounded confirmation pass have been tried; distinguish unavailable evidence from an exhausted news supply.
+
 ## Runtime State
 
 Use these workspace-relative defaults unless the scheduler provides alternatives:
