@@ -1,0 +1,4 @@
+interface:
+  display_name: "Retro CD to Mac"
+  short_description: "Install and troubleshoot legacy Windows discs on Mac"
+  default_prompt: "Use $retro-cd-to-mac to inspect my Windows CD or DVD and help install, test and package its software for my Mac."
