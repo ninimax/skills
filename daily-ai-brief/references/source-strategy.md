@@ -2,6 +2,10 @@
 
 Prefer source quality over search volume. Use primary evidence for announcements and independent reporting for impact, controversy, markets, policy, or competition.
 
+## Discovery breadth
+
+Check company/product announcements, engineering and maintainer releases, independent reporting, and research/lab publications before selecting. Apply influence and direct agency as an editorial shortlist gate before numeric scoring. Do not automatically feature first-listed paper authors or infer demographics from names. Compare research-heavy selections against the strongest verified non-paper actions, disclose the reason, and count only date-eligible historical candidates.
+
 ## Source Tiers
 
 Tier 0, primary:
